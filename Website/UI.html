@@ -1,0 +1,499 @@
+<!-- Tab links -->
+<html>
+
+<head>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <div class="tab">
+        <button class="tablinks" onclick="forCar(event, 'Car')">Cars</button>
+        <button class="tablinks" onclick="forHotel(event, 'Hotel')">Hotels</button>
+        <button class="tablinks" onclick="forAir(event, 'Air')">Flights</button>
+        <button class="tablinks" onclick="forActivity(event, 'Activity')">Activity</button>
+    </div>
+
+    <div class="forms">
+        <div class="formCar" id="form-hotel">
+            <h1>Car</h1>
+            <form id="Car"> Name:<input type="text" placeholder="Name" id="CarName" name="Name">
+                Price:<input name="Price" type="text" placeholder="Price" id="CarPrice">
+            </form>
+            <input type="button" value="POST" onclick="Post('Car')">
+        </div>
+
+        <div class="formActivity" id="form-activity">
+            <h1>Activity</h1>
+            <form id="Activity">
+                Name:<input name="Name" type="text" placeholder="Name" id="ActivityName">
+                Price:<input name="Price" type="text" placeholder="Name" id="ActivityPrice">
+                TotalTime<input name="TotalTime" type="text" placeholder="Time" id="ActivityTime">
+            </form>
+            <input type="button" value="POST" onclick="Post('Activity')">
+        </div>
+
+        <div class="formHotel" id="form-hotel">
+            <h1>Hotel</h1>
+            <form id="Hotel">
+                Name:<input name="Name" type="text" placeholder="Name" id="HotelName">
+                Price:<input name="Price" type="number" placeholder="Price" id="HotelPrice">
+                Room Type<input name="RoomType" type="text" placeholder="Time" id="HotelTime">
+                Check-In<input name="CheckIn" type="time" placeholder="Check-In" id="HotelCheckIn">
+                Check-Out<input name="Check-Out" type="time" placeholder="Check-Out" id="HotelCheckOut">
+                Rating<input name="Rating" type="number" placeholder="Rating" id="HotelRatings">
+            </form>
+            <input type="button" value="POST" onclick="Post('Hotel')">
+        </div>
+        <div class="formAir" id="form-air">
+            <h1>Air</h1>
+            <form id="Air"> Name:<input name="Name" type="text" placeholder="Name" id="AirName">
+                Price:<input name="Price" type="text" placeholder="Name" id="AirPrice">
+                Departure Time<input name="DepartureTime" type="time" placeholder="Time" id="AirDepartTime">
+                Arrival Time<input name="ArrivalTime" type="time" placeholder="Time" id="AirArrivalTime">
+            </form><input type="button" value="POST" onclick="Post('Air')">
+        </div>
+    </div>
+    <div id='tab-list'>
+
+    </div>
+    <p id="demo"></p>
+    <!-- Tab content -->
+
+
+    <script>
+        var xmlhttp = new XMLHttpRequest();
+        function forCar(evt, product) {
+            document.getElementsByClassName("formCar")[0].style.display = "block";
+            document.getElementsByClassName("formHotel")[0].style.display = "none";
+            document.getElementsByClassName("formAir")[0].style.display = "none";
+            document.getElementsByClassName("formActivity")[0].style.display = "none";
+            document.getElementById('tab-list').innerHTML = "";
+            var xmlhttp = new XMLHttpRequest();
+            document.getElementsByClassName("formCar")[0].style.display = "block";
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var myArr = JSON.parse(this.responseText);
+                    for (var i = 0; i < myArr.length; i++) {
+
+                        var iDiv = document.createElement('div');
+                        iDiv.id = i;
+                        iDiv.className = 'List';
+                        document.getElementById('tab-list').appendChild(iDiv);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Id: " + myArr[i].Id);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Name: " + myArr[i].Name);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Price: " + myArr[i].Price);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("IsSaved: " + myArr[i].IsSaved);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("IsBooked: " + myArr[i].IsBooked);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var x = document.createElement("HR");
+                        iDiv.appendChild(x);
+
+
+                        var btn = document.createElement("BUTTON");
+                        var t;
+                        if (myArr[i].IsSaved == "1") {
+                            btn.className = "saved";
+                            t = document.createTextNode("Saved");
+                        }
+                        else {
+                            btn.className = "save";
+                            t = document.createTextNode("Save");
+                        }
+                       
+
+                        btn.appendChild(t);
+                        btn.setAttribute('id',myArr[i].Id)
+                        btn.setAttribute('onclick','save('+myArr[i].Id+',\"'+product+'\")');
+                        iDiv.appendChild(btn);
+                        
+                        
+                        
+                        var btn = document.createElement("BUTTON");
+                        var t;
+                        if (myArr[i].IsBooked == "1") {
+                            btn.className = "booked";
+                            t = document.createTextNode("Booked");
+                        }
+                        else {
+                            btn.className = "book";
+                            t = document.createTextNode("Book");
+                        }
+
+                        
+                        btn.appendChild(t);
+                        btn.setAttribute('id',myArr[i].Id)
+                        btn.setAttribute('onclick','book('+myArr[i].Id+',\"'+product+'\")');
+                        iDiv.appendChild(btn);
+                        
+                    
+
+                    }
+                }
+                //ParseJsonAndCreateDivs(product)
+
+            }
+            xmlhttp.open("GET", "http://localhost:50980/api/" + product, true);
+            xmlhttp.send();
+        };
+       
+        function forActivity(evt, product) {
+            document.getElementsByClassName("formCar")[0].style.display = "none";
+            document.getElementsByClassName("formHotel")[0].style.display = "none";
+            document.getElementsByClassName("formAir")[0].style.display = "none";
+            document.getElementsByClassName("formActivity")[0].style.display = "block";
+            document.getElementById('tab-list').innerHTML = "";
+            var xmlhttp = new XMLHttpRequest();
+            document.getElementsByClassName("formCar")[0].style.display = "none";
+            document.getElementsByClassName("formActivity")[0].style.display = "block";
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var myArr = JSON.parse(this.responseText);
+                    for (var i = 0; i < myArr.length; i++) {
+
+                        var iDiv = document.createElement('div');
+                        iDiv.id = i;
+                        iDiv.className = 'List';
+                        document.getElementById('tab-list').appendChild(iDiv);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Id: " + myArr[i].Id);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Name: " + myArr[i].Name);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Price: " + myArr[i].Price);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("IsSaved: " + myArr[i].IsSaved);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("IsBooked: " + myArr[i].IsBooked);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("IsBooked: " + myArr[i].IsBooked);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Time " + myArr[i].TotalTime);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var x = document.createElement("HR");
+                        iDiv.appendChild(x);
+
+                         var btn = document.createElement("BUTTON");
+                        var t;
+                        if (myArr[i].IsSaved == "1") {
+                            btn.className = "saved";
+                            t = document.createTextNode("Saved");
+                        }
+                        else {
+                            btn.className = "save";
+                            t = document.createTextNode("Save");
+                        }
+                       
+
+                        btn.appendChild(t);
+                        btn.setAttribute('id',myArr[i].Id)
+                        btn.setAttribute('onclick','save('+myArr[i].Id+',\"'+product+'\")');
+                        iDiv.appendChild(btn);
+                       
+                        
+                        
+                        var btn = document.createElement("BUTTON");
+                        var t;
+                        if (myArr[i].IsBooked == "1") {
+                            btn.className = "booked";
+                            t = document.createTextNode("Booked");
+                        }
+                        else {
+                            btn.className = "book";
+                            t = document.createTextNode("Book");
+                        }
+
+                        
+                        btn.appendChild(t);
+                        btn.setAttribute('id',myArr[i].Id)
+                        btn.setAttribute('onclick','book('+myArr[i].Id+',\"'+product+'\")');
+                        iDiv.appendChild(btn);
+                        
+                       
+                    }
+                }
+
+
+                //ParseJsonAndCreateDivs(product)
+            }
+            xmlhttp.open("GET", "http://localhost:50980/api/" + product, true);
+            xmlhttp.send();
+        };
+
+        function forHotel(evt, product) {
+            document.getElementsByClassName("formCar")[0].style.display = "none";
+            document.getElementsByClassName("formHotel")[0].style.display = "block";
+            document.getElementsByClassName("formAir")[0].style.display = "none";
+            document.getElementsByClassName("formActivity")[0].style.display = "none";
+            document.getElementById('tab-list').innerHTML = "";
+            var xmlhttp = new XMLHttpRequest();
+            document.getElementsByClassName("formHotel")[0].style.display = "block";
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var myArr = JSON.parse(this.responseText);
+                    for (var i = 0; i < myArr.length; i++) {
+
+                        var iDiv = document.createElement('div');
+                        iDiv.id = i;
+                        iDiv.className = 'List';
+                        document.getElementById('tab-list').appendChild(iDiv);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Id: " + myArr[i].Id);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Name: " + myArr[i].Name);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Price: " + myArr[i].Price);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("IsSaved: " + myArr[i].IsSaved);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("IsBooked: " + myArr[i].IsBooked);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Room Type " + myArr[i].RoomType);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Check-In " + myArr[i].CheckIn);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+
+
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Check-Out " + myArr[i].CheckOut);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Ratings " + myArr[i].Rating);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+
+
+                        var x = document.createElement("HR");
+                        iDiv.appendChild(x);
+
+
+                        var btn = document.createElement("BUTTON");
+                        var t;
+                        if (myArr[i].IsSaved == "1") {
+                            btn.className = "saved";
+                            t = document.createTextNode("Saved");
+                        }
+                        else {
+                            btn.className = "save";
+                            t = document.createTextNode("Save");
+                        }
+                       
+
+                        btn.appendChild(t);
+                        btn.setAttribute('id',myArr[i].Id)
+                        btn.setAttribute('onclick','save('+myArr[i].Id+',\"'+product+'\")');
+                        iDiv.appendChild(btn);
+                       
+                        
+                        
+                        var btn = document.createElement("BUTTON");
+                        var t;
+                        if (myArr[i].IsBooked == "1") {
+                            btn.className = "booked";
+                            t = document.createTextNode("Booked");
+                        }
+                        else {
+                            btn.className = "book";
+                            t = document.createTextNode("Book");
+                        }
+
+                        
+                        btn.appendChild(t);
+                        btn.setAttribute('id',myArr[i].Id)
+                        btn.setAttribute('onclick','book('+myArr[i].Id+',\"'+product+'\")');
+                        iDiv.appendChild(btn);
+                       
+                    }
+                }
+            }
+            xmlhttp.open("GET", "http://localhost:50980/api/" + product, true);
+            xmlhttp.send();
+            // ParseJsonAndCreateDivs(product)
+
+        };
+
+        function forAir(evt, product) {
+            document.getElementsByClassName("formCar")[0].style.display = "none";
+            document.getElementsByClassName("formHotel")[0].style.display = "none";
+            document.getElementsByClassName("formAir")[0].style.display = "block";
+            document.getElementsByClassName("formActivity")[0].style.display = "none";
+            document.getElementById('tab-list').innerHTML = "";
+            var xmlhttp = new XMLHttpRequest();
+            document.getElementsByClassName("formAir")[0].style.display = "block";
+            xmlhttp.onreadystatechange = function () {
+                if (this.readyState == 4 && this.status == 200) {
+                    var myArr = JSON.parse(this.responseText);
+                    for (var i = 0; i < myArr.length; i++) {
+
+                        var iDiv = document.createElement('div');
+                        iDiv.id = i;
+                        iDiv.className = 'List';
+                        document.getElementById('tab-list').appendChild(iDiv);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Id: " + myArr[i].Id);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Name: " + myArr[i].Name);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Price: " + myArr[i].Price);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("IsSaved: " + myArr[i].IsSaved);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("IsBooked: " + myArr[i].IsBooked);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Departure Time " + myArr[i].DepartureTime);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+
+                        var para = document.createElement("p");
+                        var node = document.createTextNode("Arrival Time: " + myArr[i].ArrivalTime);
+                        para.appendChild(node);
+                        iDiv.appendChild(para);
+
+                        var x = document.createElement("HR");
+                        iDiv.appendChild(x);
+
+                       var btn = document.createElement("BUTTON");
+                        var t;
+                        if (myArr[i].IsSaved == "1") {
+                            btn.className = "saved";
+                            t = document.createTextNode("Saved");
+                        }
+                        else {
+                            btn.className = "save";
+                            t = document.createTextNode("Save");
+                        }
+                       
+
+                        btn.appendChild(t);
+                        btn.setAttribute('id',myArr[i].Id)
+                        btn.setAttribute('onclick','save('+myArr[i].Id+',\"'+product+'\")');
+                        iDiv.appendChild(btn);
+                        
+                        
+                        
+                        var btn = document.createElement("BUTTON");
+                        var t;
+                        if (myArr[i].IsBooked == "1") {
+                            btn.className = "booked";
+                            t = document.createTextNode("Booked");
+                        }
+                        else {
+                            btn.className = "book";
+                            t = document.createTextNode("Book");
+                        }
+
+                        
+                        btn.appendChild(t);
+                        btn.setAttribute('id',myArr[i].Id);
+                        btn.setAttribute('onclick','book('+myArr[i].Id+',\"'+product+'\")');
+                        iDiv.appendChild(btn);
+                        
+                        
+                    }
+                }
+
+            }
+            xmlhttp.open("GET", "http://localhost:50980/api/" + product, true);
+            xmlhttp.send();
+            //ParseJsonAndCreateDivs(product)
+
+        };
+
+        function Post(product) {
+            var xmlhttp = new XMLHttpRequest();
+            var Arr = document.getElementById(product);
+            object = {};
+            for (let i = 0; i < Arr.length; i++) {
+                object[document.getElementById(product).elements.item(i).getAttribute("name")] = document.getElementById(product).elements.item(i).value;
+            }
+            object = JSON.stringify(object);
+            xmlhttp.open("POST", "http://localhost:50980/api/" + product, true);
+            xmlhttp.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+            xmlhttp.send(object);
+        }
+
+
+         function save(id,product)
+        {
+            var xmlhttp = new XMLHttpRequest();
+            var Arr = document.getElementById(product);
+            object = {};
+            object["id"]=id;
+            object["type"]="saved";
+            object = JSON.stringify(object);
+            xmlhttp.open("PUT", "http://localhost:50980/api/" + product, true);
+            xmlhttp.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+            xmlhttp.send(object);
+        }
+        function book(id, product)
+        {
+            var xmlhttp = new XMLHttpRequest();
+            var Arr = document.getElementById(product);
+            object = {};
+            object.id=id;
+            object.type="booked";
+            object = JSON.stringify(object);
+            xmlhttp.open("PUT", "http://localhost:50980/api/" + product, true);
+            xmlhttp.setRequestHeader("Content-Type", "application/json; charset=utf-8");
+            xmlhttp.send(object);
+        }
+
+    </script>
+</body>
+
+</html>
